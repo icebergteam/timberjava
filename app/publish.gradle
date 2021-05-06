@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+
+tasks.register("sourcesJar", Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+tasks.register("javadocJar", Jar) {
+    from javadoc
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+    classifier "javadoc"
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from  components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId ='com.icebergteam'
+            artifactId  = 'timberjava'
+            version = '0.0.2'
+        }
+    }
+}
+
+bintray {
+    user = 'daimonkor'
+    key = 'd1b064febfe7884f909a06ba341deb695e3b87e8'
+    publications = ['MyPublication']
+    pkg {
+        repo = 'maven'
+        name = 'com.icebergteam.timberjava'
+        userOrg = 'icebergteam'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://bitbucket.org/IcebergTeam/timberjava/overview'
+        publicDownloadNumbers = true
+        publish = true
+        version {
+            name = '0.0.2'
+            vcsTag = '0.0.2'
+        }
+    }
+}
